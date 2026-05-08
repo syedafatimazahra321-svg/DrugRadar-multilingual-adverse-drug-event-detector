@@ -1,26 +1,23 @@
-# DrugRadar — requirements.txt
-# Install with: pip install -r requirements.txt
+# DrugRadar - requirements.txt
 
-# core ML
-torch>=2.1.0
-transformers>=4.40.0
-datasets>=2.19.0
-accelerate>=0.29.0
-scikit-learn>=1.4.0
-sentencepiece>=0.2.0   # required for XLM-RoBERTa tokenizer
+# Machine Learning & NLP
+torch
+transformers
+datasets
+scikit-learn
+sentencepiece
 
-# NLP utilities
-spacy>=3.7.0
-# python -m spacy download xx_ent_wiki_sm  (multilingual NER)
+# NLP tools
+spacy
 
-# augmentation
-openai>=1.25.0
+# Data handling
+pandas
+numpy
 
-# dashboard
-streamlit>=1.33.0
-plotly>=5.20.0
-pandas>=2.2.0
-numpy>=1.26.0
+# Dashboard
+streamlit
+plotly
 
-# optional: experiment tracking
-# wandb>=0.16.0
+#for API/augmentation
+openai
+ngrok
