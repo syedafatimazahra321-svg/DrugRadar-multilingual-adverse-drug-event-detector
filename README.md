@@ -1,106 +1,115 @@
 # DrugRadar
+### Pharmacovigilance Intelligence — Automated Adverse Drug Event Detection
 
-### Multilingual Adverse Drug Event Detection System
-
-NLP Final Project based on the SMM4H-HeaRD dataset.
+A full-stack pharmacovigilance platform that automatically detects adverse drug events (ADEs) from patient-written reviews using fine-tuned transformer NLP, and presents safety signals through an interactive web dashboard built for pharmaceutical safety teams.
 
 ---
 
 ## About the Project
 
-DrugRadar detects possible adverse drug events (ADEs) from social media posts and patient discussions in multiple languages.
+DrugRadar ingests real patient reviews from Drugs.com and classifies each one for adverse drug events using a fine-tuned **XLM-RoBERTa** model trained on the ADE Corpus V2. Results are stored in a structured database and surfaced through a React dashboard that gives safety officers instant, readable drug-safety intelligence — without needing to read thousands of posts manually.
 
-The system analyzes user-written text and identifies whether a post mentions a harmful reaction or side effect related to a medicine or vaccine.
-
-Supported languages:
-
-* English
-* German
-* French
-* Russian
-
-The project also highlights the part of the sentence that caused the prediction, making the output easier to understand.
+The system covers **50 drugs** across **21,861 patient reviews** and achieves **0.94 macro-F1** on ADE classification — a 49% relative improvement over a TF-IDF logistic regression baseline (0.63).
 
 ---
 
-## Project Goal
+## The Problem It Solves
 
-Many drug side effects are reported online before they are formally documented.
-
-DrugRadar aims to help in:
-
-* early detection of adverse drug reactions
-* multilingual health monitoring
-* reducing manual review workload
-* improving post-market drug surveillance
+Pharmaceutical companies are legally required to monitor post-market drug safety. Currently this means safety teams manually read thousands of patient reports every week — slow, error-prone, and unable to scale. DrugRadar automates this pipeline end-to-end.
 
 ---
 
-## Main Features
+## Key Features
 
-* Multilingual ADE detection
-* Evidence span highlighting
-* XLM-RoBERTa based classification
-* GPT-4o powered data augmentation
-* Streamlit dashboard
-* Batch CSV prediction support
-* Error analysis and evaluation reports
+- **Plain-English summary card** — auto-generated one-sentence brief per drug: signal level, ADE rate, top complaint, highest-risk patient group
+- **Signal level badge** — each drug is classified as LOW / MEDIUM / HIGH safety signal via z-score anomaly detection on ADE rates
+- **Top reported symptoms chart** — horizontal bar chart of the most frequently flagged symptoms per drug
+- **Severity breakdown** — Critical / Moderate / Weak classification of flagged posts with colour-coded progress bars
+- **Condition breakdown table** — which patient groups report the most ADEs and at what average severity
+- **Highest risk group highlight** — actionable callout box surfacing the patient group with highest average ADE severity
+- **Context patterns** — plain-English NLP insights about *when* symptoms occur (e.g. "62.5% of bleeding reports involve long-term use")
+- **Filterable evidence posts** — ALL / CRITICAL / MODERATE filter buttons on actual patient quotes, with per-post confidence score and symptom highlighting
+- **Company login system** — companies register and see only their monitored drug portfolio
+- **PDF report download** — one-click professional pharmacovigilance report with executive summary and flagged post samples
 
 ---
 
-## Novelty
+## NLP Techniques Used
 
-The main contribution of this project is the **error-driven augmentation approach**.
-
-Instead of using random data augmentation, the system:
-
-1. trains a baseline model
-2. finds posts the model failed on
-3. uses GPT-4o to generate similar examples
-4. retrains the model on those difficult cases
-
-This helps the model learn from its own mistakes and improve performance on rare ADE examples.
+- Fine-tuned transformer classification (XLM-RoBERTa-base) on ADE Corpus V2 (23,516 labelled medical texts)
+- TF-IDF baseline comparison proving transformer advantage (0.63 → 0.94 macro-F1, +49% relative improvement)
+- LIME post-hoc model interpretability
+- Regex-based context pattern detection
+- Z-score statistical anomaly detection for ADE spikes
 
 ---
 
 ## Tech Stack
 
-* Python
-* HuggingFace Transformers
-* XLM-RoBERTa
-* Streamlit
-* spaCy
-* OpenAI API
+| Layer | Technologies |
+|-------|-------------|
+| ML / NLP | XLM-RoBERTa, HuggingFace Transformers, LIME |
+| Backend | FastAPI (Python), SQLite |
+| Frontend | React, Recharts |
+| Data | ADE Corpus V2 (training), Drugs.com reviews via HuggingFace (inference) |
+| Reports | PDF generation |
 
 ---
 
 ## Dataset
 
-This project uses data from:
-
-* SMM4H-HeaRD (requested permission . will switch to this when accquired)
-* ade-benchmark-corpus (used right now)
-* multilingual patient forum posts
+| Dataset | Purpose |
+|---------|---------|
+| **ADE Corpus V2** | Model training — 23,516 labelled clinical texts |
+| **Drugs.com reviews (HuggingFace)** | Inference — 21,861 real patient reviews across 50 drugs |
 
 ---
 
 ## Project Structure
 
-```bash
+```
 drugradar/
 │
-├── 01_dataset_setup.py
-├── 02_train_xlmroberta.py
-├── 03_gpt4o_augmentation.py
-├── 04_span_extraction.py
-├── 05_dashboard.py
+├── backend/
+│   ├── main.py                  
+│   ├── database.py              
+│   ├── setup_db.py              
+│   ├── check_db.py              
+│   ├── pattern_detection.py     
+│   ├── pdf_report.py            
+│   ├── update_sentiment.py      
+│   ├── inject_missing_drugs.py  
+│   
+│
+├── frontend/
+│   └── src/
+│       └── pages/
+│           ├── Dashboard.js     
+│           ├── DrugDetail.js    
+│           ├── Login.js         
+│           └── Signup.js        
+│
+├── notebooks/
+│   ├── 00_quickstart.ipynb
+│   ├── 01_dataset_setup.ipynb
+│   ├── 02_baseline.ipynb
+│   ├── 03_xlmroberta_finetune.ipynb
+│   ├── 04_inference.ipynb
+│   └── 05_lime.ipynb
 │
 ├── data/
-├── models/
-├── outputs/
-└── requirements.txt
+   ├── drugradar.db                     
+   ├── predictions_25k_sentiment.csv    
+   └── sentiment_monthly.csv           
+
 ```
 
 ---
 
+## Results
 
+| Model | Macro-F1 |
+|-------|----------|
+| TF-IDF + Logistic Regression (baseline) | 0.63 |
+| XLM-RoBERTa (fine-tuned) | **0.94** |
+| Relative improvement | **+49%** |
