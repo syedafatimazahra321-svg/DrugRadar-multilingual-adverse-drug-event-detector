@@ -7,17 +7,27 @@ datasets
 scikit-learn
 sentencepiece
 
-# NLP tools
-spacy
+# Interpretability
+lime
 
 # Data handling
 pandas
 numpy
 
-# Dashboard
-streamlit
-plotly
+# Backend
+fastapi
+uvicorn
+python-dotenv
+python-multipart
 
-#for API/augmentation
-openai
-ngrok
+# Database
+aiosqlite
+
+# PDF report generation
+reportlab
+
+# NLP tools
+textblob
+
+# HTTP client (HuggingFace dataset fetch)
+requests
